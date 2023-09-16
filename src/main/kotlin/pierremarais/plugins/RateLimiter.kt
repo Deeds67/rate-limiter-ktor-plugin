@@ -2,6 +2,17 @@ package pierremarais.plugins
 
 import java.lang.Exception
 
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+
+fun Application.configureTokenBucketRateLimiter() = install(RateLimiterPlugin)
+class RateLimiterPluginConfiguration(var rateLimiter: RateLimiter = TokenBucket())
+
+val RateLimiterPlugin = createApplicationPlugin(name = "RateLimiterPlugin", createConfiguration = ::RateLimiterPluginConfiguration) {
+    onCall { call ->
+        pluginConfig.rateLimiter.processRequest(call.request.origin.remoteAddress)
+    }
+}
 
 typealias IPAddress = String
 interface RateLimiter {
