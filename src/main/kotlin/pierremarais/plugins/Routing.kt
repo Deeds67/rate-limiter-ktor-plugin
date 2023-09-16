@@ -9,5 +9,11 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Hello World!")
         }
+        get("/unlimited") {
+            call.respondText("unlimited")
+        }
+        get("/limited") {
+            call.respondText("limited")
+        }
     }
 }
