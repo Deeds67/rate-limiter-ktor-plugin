@@ -7,6 +7,7 @@ import io.ktor.server.routing.*
 import java.lang.Exception
 
 fun Application.configureRouting() {
+    val tokenBucket = TokenBucket()
     routing {
         get("/") {
             call.respondText("Hello World!")
@@ -15,6 +16,7 @@ fun Application.configureRouting() {
             call.respondText("unlimited")
         }
         get("/limited") {
+            tokenBucket.processRequest(call.request.origin.remoteAddress)
             call.respondText("limited")
         }
     }

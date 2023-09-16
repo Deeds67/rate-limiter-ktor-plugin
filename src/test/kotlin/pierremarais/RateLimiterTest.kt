@@ -37,4 +37,28 @@ class RateLimiterTest {
         }
         assertFails { rateLimiter.processRequest(TEST_IP) }
     }
+
+    // TODO: Add tests with multiple IPs inside bucket
+
+    @Test
+    fun `Ensure refresh token adds an additional token for each existing ip`() {
+        val rateLimiter = TokenBucket()
+
+        val generatedIPs = (1..100).map {
+            Generators.ipAddress()
+        }
+
+        generatedIPs.forEach { ip ->
+            rateLimiter.processRequest(ip)
+            rateLimiter.processRequest(ip)
+            rateLimiter.processRequest(ip)
+            assertEquals(TokenBucket.FULL_BUCKET - 2, rateLimiter.buckets[ip])
+        }
+
+        rateLimiter.refreshTokens()
+
+        generatedIPs.forEach { ip ->
+            assertEquals(TokenBucket.FULL_BUCKET - 1, rateLimiter.buckets[ip])
+        }
+    }
 }
