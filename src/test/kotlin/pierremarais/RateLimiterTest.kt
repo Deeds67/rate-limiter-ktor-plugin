@@ -86,4 +86,15 @@ class RateLimiterTest {
             assertNull(rateLimiter.buckets[ip])
         }
     }
+
+    @Test
+    fun `Ensure refreshing tokens function call creates only one thread`() {
+        val rateLimiter = TokenBucket(FULL_BUCKET)
+
+        assertNull(rateLimiter.refresherThread)
+
+        val refresherThread = rateLimiter.startRefreshingTokensThread()
+        assertEquals(refresherThread, rateLimiter.refresherThread)
+        assertEquals(refresherThread, rateLimiter.startRefreshingTokensThread())
+    }
 }

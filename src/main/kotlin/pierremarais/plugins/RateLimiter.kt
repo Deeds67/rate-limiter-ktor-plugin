@@ -9,18 +9,19 @@ interface RateLimiter {
 }
 
 class TokenBucket(private val bucketSize: Int = 10, private val tokenRefillRate: Long = 1000) : RateLimiter {
-    private val refresherThread: Thread? = null
-    fun startRefreshingTokensThread() {
+    internal var refresherThread: Thread? = null
+    fun startRefreshingTokensThread(): Thread =
         if (refresherThread == null) {
-            Thread {
+            val t = Thread {
                 while (true) {
                     refreshTokens()
                     Thread.sleep(tokenRefillRate)
                 }
-            }.start()
+            }
+            refresherThread = t
+            t.also { t.start() }
         } else
-            refresherThread
-    }
+            refresherThread!!
 
     internal val buckets = mutableMapOf<IPAddress, Int>()
     internal fun refreshTokens() {
