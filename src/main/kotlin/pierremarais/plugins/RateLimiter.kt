@@ -8,35 +8,31 @@ interface RateLimiter {
     fun processRequest(requestIp: IPAddress)
 }
 
-class TokenBucket : RateLimiter {
-    val refresherThread: Thread? = null
+class TokenBucket(private val bucketSize: Int = 10, private val tokenRefillRate: Long = 1000) : RateLimiter {
+    private val refresherThread: Thread? = null
     fun startRefreshingTokensThread() {
         if (refresherThread == null) {
             Thread {
                 while (true) {
                     refreshTokens()
-                    Thread.sleep(TOKEN_REFILL_RATE)
+                    Thread.sleep(tokenRefillRate)
                 }
             }.start()
         } else
             refresherThread
     }
-    companion object TokenBucket {
-        const val TOKEN_REFILL_RATE = 1000L
-        const val FULL_BUCKET = 3
 
-    }
     internal val buckets = mutableMapOf<IPAddress, Int>()
     internal fun refreshTokens() {
-        buckets.entries.removeIf { it.value + 1 > FULL_BUCKET }
+        buckets.entries.removeIf { it.value + 1 > bucketSize }
         buckets.forEach { entry ->
             val ip = entry.key
-            buckets.merge(ip, FULL_BUCKET) { t, _ -> t + 1}
+            buckets.merge(ip, bucketSize) { t, _ -> t + 1}
         }
     }
 
     override fun processRequest(requestIp: IPAddress) {
-        buckets.merge(requestIp, FULL_BUCKET) { tokens, _ ->
+        buckets.merge(requestIp, bucketSize - 1) { tokens, _ ->
             if (tokens > 0) {
                 tokens - 1
             } else {
