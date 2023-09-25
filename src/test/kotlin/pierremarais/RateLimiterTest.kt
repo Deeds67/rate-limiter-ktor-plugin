@@ -7,9 +7,10 @@ import kotlin.test.assertFails
 import kotlin.test.assertNull
 
 class RateLimiterTest {
-    val TEST_IP = "127.0.0.1"
-    val FULL_BUCKET = 3
-
+    companion object {
+        const val FULL_BUCKET = 3
+        const val TEST_IP = "127.0.0.1"
+    }
     @Test
     fun `ensure non existing ip gets full bucket amount minus one`() {
         val rateLimiter = TokenBucket(FULL_BUCKET)
@@ -39,8 +40,6 @@ class RateLimiterTest {
         }
         assertFails { rateLimiter.processRequest(TEST_IP) }
     }
-
-    // TODO: Add tests with multiple IPs inside bucket
 
     @Test
     fun `Ensure refresh token adds an additional token for each existing ip`() {
