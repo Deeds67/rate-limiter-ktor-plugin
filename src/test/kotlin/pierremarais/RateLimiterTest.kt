@@ -1,7 +1,7 @@
 package pierremarais
 
 import org.junit.Test
-import pierremarais.plugins.TokenBucket
+import pierremarais.ratelimiter.TokenBucket
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertNull
