@@ -23,7 +23,6 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-metrics-jvm")
     implementation("io.ktor:ktor-server-call-logging-jvm")
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
